@@ -48,7 +48,8 @@ function fleedicon_content_plugin_getFavicon($feed_id) {
         /**
          * Si l'une des deux marche on essai d'appeler le service g.etfv.co
          */
-        if ($url) {
+        if ($url && isset($url['host'])) {            
+            $url['scheme'] = isset($url['scheme']) ? $url['scheme'] : 'http';
             file_put_contents($iconPath, file_get_contents('http://g.etfv.co/' . $url['scheme'] . '://' . $url['host']));
         } else {
             /**
