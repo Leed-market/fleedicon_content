@@ -4,7 +4,7 @@
   @name Fleedicon_content
   @author gavrochelegnou <gavrochelegnou@trashmail.net>
   @licence CC by nc sa http://creativecommons.org/licenses/by-nc-sa/2.0/fr/
-  @version 1.0.0
+  @version 1.0.1
   @description Le plugin Fleedicon_content ajoute un favicon à gauche de chaque item lors de la lecture
  */
 
@@ -50,7 +50,19 @@ function fleedicon_content_plugin_getFavicon($feed_id) {
          */
         if ($url && isset($url['host'])) {            
             $url['scheme'] = isset($url['scheme']) ? $url['scheme'] : 'http';
-            file_put_contents($iconPath, file_get_contents('http://g.etfv.co/' . $url['scheme'] . '://' . $url['host']));
+            $ctx = stream_context_create(array(
+                    'http' => array(
+                        'timeout' => 2
+                    )
+                )
+            );
+            $icon = file_get_contents('http://g.etfv.co/' . $url['scheme'] . '://' . $url['host'],0,$ctx);
+            if ($icon) {
+                file_put_contents($iconPath, $icon);
+            } else {
+                copy(Plugin::path() . 'default.png', $iconPath);
+            }
+            //file_put_contents($iconPath, file_get_contents('http://g.etfv.co/' . $url['scheme'] . '://' . $url['host']));
         } else {
             /**
              * Sinon on utilise l'icône par défaut
