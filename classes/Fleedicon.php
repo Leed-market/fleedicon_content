@@ -142,28 +142,6 @@ class Fleedicon {
             }
         }
 
-        /*
-        [todo] - Remove if useless
-        $headers = @get_headers($ico_url, 1);
-        $logs[] = 'headers: <pre>' . print_r( $headers, true ) . '</pre>';
-        if ($headers && isset( $headers['Location'] ) ) {
-            $headers['Location'] = is_array($headers['Location']) ? end($headers['Location']) : $headers['Location'];
-            $ico_url = $headers['Location'];
-            $headers = @get_headers($ico_url, 1);
-            $logs[] = 'headers img: <pre>' . print_r( $headers, true ) . '</pre>';
-        }*/
-
-        /* (preg_match('/(200 OK)|(302 Found)/', $headers[0], $matches, PREG_OFFSET_CAPTURE)) {
-            $logs[] = 'match!';
-            if ( $this->isImage( $ico_url ) ) {
-                $logs[] = 'oui';
-                return $ico_url;
-            } else {
-                $logs[] = 'not';
-            }
-        }
-        
-        return false;*/
         if($this->debug) {
             foreach($logs as $log) {
                 echo $log;
