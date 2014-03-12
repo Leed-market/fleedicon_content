@@ -51,7 +51,7 @@ class Fleedicon {
         return '<img src="' . $this->icon_path . '" width="16" height="16" alt="' . htmlentities($allFeeds['idMap'][$this->feed_id]['name'], ENT_QUOTES) . '" />';
     }
 
-    public function setFavicon($url=false) {
+    public function setFavicon($set_check_date=true, $url=false) {
 
         if(!$url) {
             $f = new Feed();
@@ -79,7 +79,9 @@ class Fleedicon {
             }
         }
 
-        $this->setCheckDate($this->today->format('Y-m-d'));
+        if($set_check_date===true) {
+            $this->setCheckDate($this->today->format('Y-m-d'));
+        }
 
     }
 

@@ -12,20 +12,23 @@
 
 require( 'classes/Fleedicon.php' );
 
+define('FLEEDICON_PATH', Plugin::path());
+
 function fleedicon_content_plugin_addFavicon(&$event) {
-    $path = Plugin::path();
-    $fleedicon = new Fleedicon($event->getFeed(), $path);
+    $fleedicon = new Fleedicon($event->getFeed(), FLEEDICON_PATH);
     $event->favicon = $fleedicon->action();
 }
 
 function fleedicon_aside_plugin_addFavicon(&$feed) {
-    $path = Plugin::path();
-    $fleedicon = new Fleedicon($feed['id'], $path);
+    $fleedicon = new Fleedicon($feed['id'], FLEEDICON_PATH);
     $feed['favicon'] = $fleedicon->action();
 }
 
+function fleedicon_save_favicon(&$feed) {
+    $fleedicon = new Fleedicon($feed->getId(), FLEEDICON_PATH);
+    $fleedicon->setFavicon(false);
+}
 
 Plugin::addHook("event_pre_title", "fleedicon_content_plugin_addFavicon");
-
 Plugin::addHook("menu_pre_feed_link", "fleedicon_aside_plugin_addFavicon");
-
+Plugin::addHook("action_after_addFeed", "fleedicon_save_favicon");
