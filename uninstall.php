@@ -1,11 +1,7 @@
 <?php
 
-$plugins_path = Plugin::path();
-$favicons_path = $plugins_path.'favicons/';
-if (file_exists($favicons_path)) {
-    $favicons = preg_grep('/default\.png$/', glob($favicons_path.'*'), PREG_GREP_INVERT);
-    foreach ($favicons as $favicon) {
-        unlink($favicon);        
-    }
-    unlink($plugins_path.'check');
-}
+require_once( 'classes/Fleedicon.php' );
+
+$plugin_path = Plugin::path();
+Fleedicon::removeAllFavicons($plugin_path);
+Fleedicon::removeCheckDateFile($plugin_path);

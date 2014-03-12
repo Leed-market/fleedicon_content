@@ -91,6 +91,16 @@ class Fleedicon {
         unlink($this->base_path.$this->feed_id.'.png');
     }
 
+    public static function removeAllFavicons($plugin_path) {
+        $favicons_path = $plugin_path . self::$icons_folder;
+        if (file_exists($favicons_path)) {
+            $favicons = preg_grep('/default\.png$/', glob($favicons_path.'*'), PREG_GREP_INVERT);
+            foreach ($favicons as $favicon) {
+                unlink($favicon);
+            }
+        }
+   }
+
     protected function setCheckDate($date) {
         file_put_contents( $this->plugin_path . self::$check_date_file, $date );
     }
@@ -98,6 +108,17 @@ class Fleedicon {
     protected function getCheckDate() {
         $content = file_get_contents( $this->plugin_path . self::$check_date_file );
         return $content;
+    }
+
+    public static function createCheckDateFile($plugin_path) {
+        touch($plugin_path . self::$check_date_file);
+    }
+
+    public static function removeCheckDateFile($plugin_path) {
+        $check_date_file = $plugin_path . self::$check_date_file;
+        if(file_exists($check_date_file)) {
+            unlink($check_date_file);
+        }
     }
 
     protected function getFaviconFromUrl($url) {
