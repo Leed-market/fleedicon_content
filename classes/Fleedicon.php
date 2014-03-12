@@ -10,7 +10,6 @@ class Fleedicon {
     protected $icon_exists;
     protected $default_icon_path;
 
-    protected $new_check;
     protected $today;
 
     protected $debug;
@@ -25,20 +24,16 @@ class Fleedicon {
         $this->icon_exists = file_exists( $this->icon_path );
         $this->default_icon_path = $this->base_path . 'default.png';
 
-        $new_check = new DateTime( $this->getCheckDate() );
-        $new_check->add( new DateInterval('P1M') );
-
-        $this->new_check = $new_check;
-
         $this->today = new DateTime( date('Y-m-d') );
 
         $this->debug = $debug;
     }
 
     public function action() {
+        $new_check = $this->isNewCheck();
 
         if( (   $this->icon_exists === false 
-             && $this->today > $this->new_check 
+             && $this->today > $new_check 
             )
             || $this->debug ) {
             $this->setFavicon();
@@ -167,5 +162,13 @@ class Fleedicon {
 
     protected function fileExists($url) {
         return (@fopen($url,"r")==true);
+    }
+
+    protected function isNewCheck() {
+        $new_check = new DateTime( $this->getCheckDate() );
+        $new_check->add( new DateInterval('P1M') );
+
+        return $new_check;
+
     }
 }
