@@ -29,6 +29,12 @@ function fleedicon_save_favicon(&$feed) {
     $fleedicon->setFavicon(false);
 }
 
+function fleedicon_remove_favicon($id) {
+    $fleedicon = new Fleedicon($id, FLEEDICON_PATH);
+    $fleedicon->removeFavicon();
+}
+
 Plugin::addHook("event_pre_title", "fleedicon_content_plugin_addFavicon");
 Plugin::addHook("menu_pre_feed_link", "fleedicon_aside_plugin_addFavicon");
 Plugin::addHook("action_after_addFeed", "fleedicon_save_favicon");
+Plugin::addHook("action_after_removeFeed", "fleedicon_remove_favicon");

@@ -85,6 +85,10 @@ class Fleedicon {
 
     }
 
+    public function removeFavicon() {
+        unlink($this->base_path.$this->feed_id.'.png');
+    }
+
     protected function setCheckDate($date) {
         file_put_contents( $this->plugin_path . 'check', $date );
     }
