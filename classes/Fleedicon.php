@@ -5,6 +5,8 @@ class Fleedicon {
     protected $feed_id;
 
     protected $plugin_path;
+    protected static $icons_folder = 'favicons/';
+    protected static $check_date_file = 'check';
     protected $base_path;
     protected $icon_path;
     protected $icon_exists;
@@ -19,7 +21,7 @@ class Fleedicon {
         $this->feed_id = $feed_id;
         $this->plugin_path = $path;
 
-        $this->base_path = $this->plugin_path . 'favicons/';
+        $this->base_path = $this->plugin_path . self::$icons_folder;
         $this->icon_path = $this->base_path . $this->feed_id . '.png';
         $this->icon_exists = file_exists( $this->icon_path );
         $this->default_icon_path = $this->base_path . 'default.png';
@@ -90,11 +92,11 @@ class Fleedicon {
     }
 
     protected function setCheckDate($date) {
-        file_put_contents( $this->plugin_path . 'check', $date );
+        file_put_contents( $this->plugin_path . self::$check_date_file, $date );
     }
 
     protected function getCheckDate() {
-        $content = file_get_contents( $this->plugin_path . 'check' );
+        $content = file_get_contents( $this->plugin_path . self::$check_date_file );
         return $content;
     }
 
