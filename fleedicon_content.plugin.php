@@ -6,7 +6,7 @@
   @initby gavrochelegnou <gavrochelegnou@trashmail.net>
   @licence CC by nc sa http://creativecommons.org/licenses/by-nc-sa/2.0/fr/
   @version 2.0.0
-  @description Add a the site's favicon on the left of each feed (setup can take a while if you have many feeds)
+  @description Add the site's favicon on the left of each feed (setup can take a while if you have many feeds)
  */
 
 
