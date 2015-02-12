@@ -56,13 +56,12 @@ function fleedicon_content_plugin_getFavicon($feed_id) {
                     )
                 )
             );
-            $icon = file_get_contents('http://g.etfv.co/' . $url['scheme'] . '://' . $url['host'],0,$ctx);
+            $icon = file_get_contents('http://www.google.com/s2/favicons?domain=' . $url['scheme'] . '://' . $url['host'],0,$ctx);
             if ($icon) {
                 file_put_contents($iconPath, $icon);
             } else {
                 copy(Plugin::path() . 'default.png', $iconPath);
             }
-            //file_put_contents($iconPath, file_get_contents('http://g.etfv.co/' . $url['scheme'] . '://' . $url['host']));
         } else {
             /**
              * Sinon on utilise l'icône par défaut
