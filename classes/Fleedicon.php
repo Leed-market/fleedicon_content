@@ -72,8 +72,8 @@ class Fleedicon {
             if($favicon !== false) {
                 file_put_contents($this->icon_path, $favicon);
             } else {
-                $etfv_url = 'http://g.etfv.co/' . $url . '?defaulticon=none';
-                $favicon = $this->image($etfv_url);
+                $service_url = 'http://grabicon.com/icon?domain=' . $url;
+                $favicon = $this->getImage($service_url);
 
                 if($favicon !== false) {
                     file_put_contents($this->icon_path, $favicon);
@@ -123,8 +123,6 @@ class Fleedicon {
 
     protected function getFaviconFromUrl($url) {
         // Helped by: https://github.com/gokercebeci/geticon/blob/master/class.geticon.php
-        $ico_checked = false;
-
         $logs[] = 'in: ' . $url;
 
          if($h = @fopen($url, 'r')) {
@@ -161,9 +159,6 @@ class Fleedicon {
             $parsed_url = parse_url($url);
             $base_url = $parsed_url['scheme'].'://'.$parsed_url['host'];
             $ico_url = $base_url . '/favicon.ico';
-            if($this->fileExists($ico_url)) {
-                $ico_checked = true;
-            }
         }
 
         if($this->debug) {
@@ -172,16 +167,25 @@ class Fleedicon {
             }
         }
 
-        return $this->image($ico_url, $ico_checked);
+        return $this->getImage($ico_url);
     }
 
-    protected function image($url, $checked=false) {
-        if(!$this->fileExists($url)) {
+    protected function getImage($url) {
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        // Used for Grabicon.com
+        $header_options = array(
+          'http' => // The wrapper to be used
+            array(
+            'method'  => 'GET', // Request Method
+            'header' => "Referer: " . $_SERVER["HTTP_REFERER"] . "\r\n"
+          )
+        );
+        $context = stream_context_create( $header_options );
+
+        $file = @file_get_contents($url, false, $context);
+        if($file === FALSE) {
             return false;
         }
-
-        $finfo = new finfo(FILEINFO_MIME_TYPE);
-        $file = file_get_contents($url);
         $mime_type = $finfo->buffer($file);
 
         $pos = strpos($mime_type, 'image');
@@ -189,15 +193,10 @@ class Fleedicon {
         return $pos !== false ? $file : false;
     }
 
-    protected function fileExists($url) {
-        return (@fopen($url,"r")==true);
-    }
-
     protected function isNewCheck() {
         $new_check = new DateTime( $this->getCheckDate() );
         $new_check->add( new DateInterval('P1M') );
 
         return $new_check;
-
     }
 }
