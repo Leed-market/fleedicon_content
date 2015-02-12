@@ -87,8 +87,15 @@ class Fleedicon {
 
     }
 
-    public function removeFavicon() {
-        unlink($this->base_path.$this->feed_id.'.png');
+    public static function removeFavicon( $path = false ) {
+        if( ! $path ) {
+            $path = $this->base_path . $this->feed_id . '.png';
+        }
+
+        if( ! file_exists( $path ) ) {
+            return false;
+        }
+        unlink( $path );
     }
 
     public static function removeAllFavicons($plugin_path) {
@@ -96,7 +103,7 @@ class Fleedicon {
         if (file_exists($favicons_path)) {
             $favicons = preg_grep('/default\.png$/', glob($favicons_path.'*'), PREG_GREP_INVERT);
             foreach ($favicons as $favicon) {
-                unlink($favicon);
+                self::removeFavicon( $favicon );
             }
         }
    }
