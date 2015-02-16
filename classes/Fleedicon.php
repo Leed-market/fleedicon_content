@@ -196,7 +196,7 @@ class Fleedicon {
           'http' => // The wrapper to be used
             array(
             'method'  => 'GET', // Request Method
-            'header' => "Referer: " . $_SERVER["HTTP_REFERER"] . "\r\n"
+            'header' => "Referer: " . $_SERVER["HTTP_HOST"] . $_SERVER['REQUEST_URI'] . "\r\n"
           )
         );
         $context = stream_context_create( $header_options );
