@@ -87,6 +87,18 @@ class Fleedicon {
 
     }
 
+    public static function setAllFavicons( $plugin_path ) {
+        self::createCheckDateFile( $plugin_path );
+        $feed = new Feed();
+        $conditions = 'SELECT id, website FROM `' . MYSQL_PREFIX .  'feed` ;';
+        $query = $feed->customQuery($conditions);
+
+        while( $feed = mysql_fetch_assoc($query) ) {
+            $fleeicon = new Fleedicon($feed['id'], $plugin_path);
+            $fleeicon->setFavicon(true, $feed['website']);
+        }
+    }
+
     public static function removeFavicon( $path = false ) {
         if( ! $path ) {
             $path = $this->base_path . $this->feed_id . '.png';
