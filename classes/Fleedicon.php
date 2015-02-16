@@ -87,15 +87,16 @@ class Fleedicon {
 
     }
 
-    public static function setAllFavicons( $plugin_path ) {
-        self::createCheckDateFile( $plugin_path );
+    public static function setAllFavicons($plugin_path = './') {
         $feed = new Feed();
         $conditions = 'SELECT id, website FROM `' . MYSQL_PREFIX .  'feed` ;';
         $query = $feed->customQuery($conditions);
 
         while( $feed = mysql_fetch_assoc($query) ) {
-            $fleeicon = new Fleedicon($feed['id'], $plugin_path);
-            $fleeicon->setFavicon(true, $feed['website']);
+            $fleedicon = new Fleedicon($feed['id'], $plugin_path);
+            if(!$fleedicon->icon_exists) {
+                $fleedicon->setFavicon(true, $feed['website']);
+            }
         }
     }
 
@@ -121,7 +122,9 @@ class Fleedicon {
    }
 
     protected function setCheckDate($date) {
-        file_put_contents( $this->plugin_path . self::$check_date_file, $date );
+        $filepath = $this->plugin_path . self::$check_date_file;
+        self::createIfNotExists($filepath);
+        file_put_contents( $filepath, $date );
     }
 
     protected function getCheckDate() {
@@ -129,8 +132,10 @@ class Fleedicon {
         return $content;
     }
 
-    public static function createCheckDateFile($plugin_path) {
-        touch($plugin_path . self::$check_date_file);
+    public static function createIfNotExists($filepath) {
+        if(!file_exists($filepath)) {
+            touch($filepath);
+        }
     }
 
     public static function removeCheckDateFile($plugin_path) {
