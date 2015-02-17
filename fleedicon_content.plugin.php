@@ -3,7 +3,7 @@
 /*
   @name Fleedicon_content
   @author Simounet <contact@simounet.net>
-  @initby gavrochelegnou <gavrochelegnou@trashmail.net>
+  @author gavrochelegnou (plugin's creator) <gavroche-leg.nou+test@tr+ash_mail.net>
   @licence CC by nc sa http://creativecommons.org/licenses/by-nc-sa/2.0/fr/
   @version 2.0.0
   @description Add the site's favicon on the left of each feed (setup can take a while if you have many feeds)
