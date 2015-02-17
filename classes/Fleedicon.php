@@ -32,10 +32,8 @@ class Fleedicon {
     }
 
     public function action() {
-        $new_check = $this->isNewCheck();
-
         if( (   $this->icon_exists === false 
-             && $this->today > $new_check 
+             && $this->today > $this->getNewCheckDate()
             )
             || $this->debug ) {
             $this->setFavicon();
@@ -149,32 +147,33 @@ class Fleedicon {
         // Helped by: https://github.com/gokercebeci/geticon/blob/master/class.geticon.php
         $logs[] = 'in: ' . $url;
 
-         if($h = @fopen($url, 'r')) {
-            $context = stream_context_create(
-                    array (
-                        'http' => array (
-                            'follow_location' => false // don't follow redirects
-                        )
+        $user_agent = $this->getUserAgent();
+
+        $context = stream_context_create(
+                array (
+                    'http' => array (
+                        'follow_location' => false, // don't follow redirects
+                        'user_agent' => $user_agent
                     )
-                );
-            $html = file_get_contents($url, false, $context);
-            $logs[] = '<pre>' . print_r( $html, true ) . '</pre>';
-            if (preg_match('/<([^>]*)link([^>]*)rel\=("|\')?(icon|shortcut icon)("|\')?([^>]*)>/iU', $html, $out)) {
-                $logs[] = 'match out: <pre>' . print_r( $out, true ) . '</pre>';
-                if (preg_match('/href([s]*)=([s]*)"([^"]*)"/iU', $out[0], $out)) {
-                    $logs[] = 'match out2: <pre>' . print_r( $out, true ) . '</pre>';
-                    $ico_href = trim($out[3]);
-                    $logs[] = 'ico href: <pre>' . print_r( $out, true ) . '</pre>';
-                    if (preg_match('/(http)(s)?(:\/\/)/', $ico_href, $matches, PREG_OFFSET_CAPTURE)) {
-                        $ico_url = $ico_href;
-                        $logs[] = 'ico url: ' . $ico_url;
-                    } elseif (preg_match('/(\/\/)/', $ico_href, $matches, PREG_OFFSET_CAPTURE)) {
-                        $ico_url = 'http:' . $ico_href;
-                        $logs[] = 'ico url2: ' . $ico_url;
-                    } else {
-                        $ico_url = $url . ltrim($ico_href, '/');
-                        $logs[] = 'else: ' . $ico_url;
-                    }
+                )
+            );
+        $html = @file_get_contents($url, false, $context);
+        $logs[] = '<pre>' . print_r( $html, true ) . '</pre>';
+        if (preg_match('/<([^>]*)link([^>]*)rel\=("|\')?(icon|shortcut icon)("|\')?([^>]*)>/iU', $html, $out)) {
+            $logs[] = 'match out: <pre>' . print_r( $out, true ) . '</pre>';
+            if (preg_match('/href([s]*)=([s]*)"([^"]*)"/iU', $out[0], $out)) {
+                $logs[] = 'match out2: <pre>' . print_r( $out, true ) . '</pre>';
+                $ico_href = trim($out[3]);
+                $logs[] = 'ico href: <pre>' . print_r( $out, true ) . '</pre>';
+                if (preg_match('/(http)(s)?(:\/\/)/', $ico_href, $matches, PREG_OFFSET_CAPTURE)) {
+                    $ico_url = $ico_href;
+                    $logs[] = 'ico url: ' . $ico_url;
+                } elseif (preg_match('/(\/\/)/', $ico_href, $matches, PREG_OFFSET_CAPTURE)) {
+                    $ico_url = 'http:' . $ico_href;
+                    $logs[] = 'ico url2: ' . $ico_url;
+                } else {
+                    $ico_url = $url . ltrim($ico_href, '/');
+                    $logs[] = 'else: ' . $ico_url;
                 }
             }
         }
@@ -197,11 +196,13 @@ class Fleedicon {
     protected function getImage($url) {
         $finfo = new finfo(FILEINFO_MIME_TYPE);
         // Used for Grabicon.com
+        $user_agent = $this->getUserAgent();
         $header_options = array(
           'http' => // The wrapper to be used
             array(
             'method'  => 'GET', // Request Method
-            'header' => "Referer: " . $_SERVER["HTTP_HOST"] . $_SERVER['REQUEST_URI'] . "\r\n"
+            'header' => "Referer: " . $_SERVER["HTTP_HOST"] . $_SERVER['REQUEST_URI'] . "\r\n",
+            'user_agent' => $user_agent
           )
         );
         $context = stream_context_create( $header_options );
@@ -217,10 +218,18 @@ class Fleedicon {
         return $pos !== false ? $file : false;
     }
 
-    protected function isNewCheck() {
+    protected function getNewCheckDate() {
         $new_check = new DateTime( $this->getCheckDate() );
         $new_check->add( new DateInterval('P1M') );
 
         return $new_check;
+    }
+
+    protected function getUserAgent() {
+        $user_agent = 'Leed (X11; Linux i686; rv:37.0) Gecko/20100101 Firefox/37.0';
+        if( isset($_SERVER['HTTP_USER_AGENT']) ) {
+            $user_agent = $_SERVER['HTTP_USER_AGENT'];
+        }
+        return $user_agent;
     }
 }
