@@ -90,7 +90,7 @@ class Fleedicon {
         $conditions = 'SELECT id, website FROM `' . MYSQL_PREFIX .  'feed` ;';
         $query = $feed->customQuery($conditions);
 
-        while( $feed = mysql_fetch_assoc($query) ) {
+        while( $feed = $query->fetch_assoc() ) {
             $fleedicon = new Fleedicon($feed['id'], $plugin_path);
             if(!$fleedicon->icon_exists) {
                 $fleedicon->setFavicon(true, $feed['website']);
