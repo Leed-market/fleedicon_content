@@ -1,3 +1,4 @@
 favicons/
 !favicons/default.png
-check
+logs/
+!logs/.gitkeep

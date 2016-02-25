@@ -1,14 +1,14 @@
 <?php
 
 class Fleedicon {
-    CONST LOGS_FOLDER = 'logs/';
+    CONST FAVICONS_FOLDER = 'favicons/';
+    CONST LOGS_FOLDER     = 'logs/';
     CONST NO_FAVICON_LOG_FILE = self::LOGS_FOLDER . 'no-favicon';
+    CONST CHECK_DATE_FILE     = self::LOGS_FOLDER . 'check';
 
     protected $feed_id;
 
     protected $plugin_path;
-    protected static $icons_folder = 'favicons/';
-    protected static $check_date_file = 'check';
     protected $base_path;
     protected $icon_path;
     protected $icon_exists;
@@ -23,7 +23,7 @@ class Fleedicon {
         $this->feed_id = $feed_id;
         $this->plugin_path = $path;
 
-        $this->base_path = $this->plugin_path . self::$icons_folder;
+        $this->base_path = $this->plugin_path . self::FAVICONS_FOLDER;
         $this->icon_path = $this->base_path . $this->feed_id . '.png';
         $this->icon_exists = file_exists( $this->icon_path );
         $this->default_icon_path = $this->base_path . 'default.png';
@@ -105,7 +105,7 @@ class Fleedicon {
     }
 
     public static function removeAllFavicons($plugin_path) {
-        $favicons_path = $plugin_path . self::$icons_folder;
+        $favicons_path = $plugin_path . self::FAVICONS_FOLDER;
         if (file_exists($favicons_path)) {
             $favicons = preg_grep('/default\.png$/', glob($favicons_path.'*'), PREG_GREP_INVERT);
             foreach ($favicons as $favicon) {
@@ -122,18 +122,18 @@ class Fleedicon {
     }
 
     protected function setCheckDate($date) {
-        $filepath = $this->plugin_path . self::$check_date_file;
+        $filepath = $this->plugin_path . self::CHECK_DATE_FILE;
         self::createFileIfNotExists($filepath);
         file_put_contents( $filepath, $date );
     }
 
     protected function getCheckDate() {
-        $content = file_get_contents( $this->plugin_path . self::$check_date_file );
+        $content = file_get_contents( $this->plugin_path . self::CHECK_DATE_FILE );
         return $content;
     }
 
     public static function removeCheckDateFile($plugin_path) {
-        self::removeFile($plugin_path . self::$check_date_file);
+        self::removeFile($plugin_path . self::CHECK_DATE_FILE);
     }
 
     protected function createErrorsFile() {
