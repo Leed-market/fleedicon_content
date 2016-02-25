@@ -1,6 +1,8 @@
 <?php
 
 class Fleedicon {
+    CONST LOGS_FOLDER = 'logs/';
+    CONST NO_FAVICON_LOG_FILE = self::LOGS_FOLDER . 'no-favicon';
 
     protected $feed_id;
 
@@ -36,6 +38,7 @@ class Fleedicon {
              && $this->today > $this->getNewCheckDate()
             )
             || $this->debug ) {
+            $this->createErrorsFile();
             $this->setFavicon();
         }
 
@@ -69,6 +72,8 @@ class Fleedicon {
 
             if($favicon !== false) {
                 file_put_contents($this->icon_path, $favicon);
+            } else {
+                file_put_contents($this->plugin_path . self::NO_FAVICON_LOG_FILE, $url . "\n", FILE_APPEND | LOCK_EX);
             }
         }
 
@@ -118,7 +123,7 @@ class Fleedicon {
 
     protected function setCheckDate($date) {
         $filepath = $this->plugin_path . self::$check_date_file;
-        self::createIfNotExists($filepath);
+        self::createFileIfNotExists($filepath);
         file_put_contents( $filepath, $date );
     }
 
@@ -127,16 +132,25 @@ class Fleedicon {
         return $content;
     }
 
-    public static function createIfNotExists($filepath) {
+    public static function removeCheckDateFile($plugin_path) {
+        self::removeFile($plugin_path . self::$check_date_file);
+    }
+
+    protected function createErrorsFile() {
+        $errors_file = $plugin_path . self::NO_FAVICON_LOG_FILE;
+        self::removeFile($errors_file);
+        self::createFileIfNotExists($errors_file);
+    }
+
+    protected static function createFileIfNotExists($filepath) {
         if(!file_exists($filepath)) {
             touch($filepath);
         }
     }
 
-    public static function removeCheckDateFile($plugin_path) {
-        $check_date_file = $plugin_path . self::$check_date_file;
-        if(file_exists($check_date_file)) {
-            unlink($check_date_file);
+    protected static function removeFile($path) {
+        if(file_exists($path)) {
+            unlink($path);
         }
     }
 
