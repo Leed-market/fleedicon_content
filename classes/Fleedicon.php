@@ -69,13 +69,6 @@ class Fleedicon {
 
             if($favicon !== false) {
                 file_put_contents($this->icon_path, $favicon);
-            } else {
-                $service_url = 'http://grabicon.com/icon?domain=' . $url;
-                $favicon = $this->getImage($service_url);
-
-                if($favicon !== false) {
-                    file_put_contents($this->icon_path, $favicon);
-                }
             }
         }
 
@@ -208,7 +201,6 @@ class Fleedicon {
 
     protected function getImage($url) {
         $finfo = new finfo(FILEINFO_MIME_TYPE);
-        // Used for Grabicon.com
         $user_agent = $this->getUserAgent();
         $header_options = array(
           'http' => // The wrapper to be used
