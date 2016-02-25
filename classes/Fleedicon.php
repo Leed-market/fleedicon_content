@@ -156,12 +156,13 @@ class Fleedicon {
         $context = stream_context_create(
                 array (
                     'http' => array (
-                        'follow_location' => false, // don't follow redirects
+                        'follow_location' => true, // don't follow redirects
                         'user_agent' => $user_agent
                     )
                 )
             );
         $html = @file_get_contents($url, false, $context);
+        //$html = @stream_get_contents(fopen($url, "rb"));
         $logs[] = '<pre>' . print_r( $html, true ) . '</pre>';
         if (preg_match('/<([^>]*)link([^>]*)rel\=("|\')?(icon|shortcut icon)("|\')?([^>]*)>/iU', $html, $out)) {
             $logs[] = 'match out: <pre>' . print_r( $out, true ) . '</pre>';
@@ -176,7 +177,15 @@ class Fleedicon {
                     $ico_url = 'http:' . $ico_href;
                     $logs[] = 'ico url2: ' . $ico_url;
                 } else {
-                    $ico_url = $url . ltrim($ico_href, '/');
+                    if( strpos( $ico_href, '/' ) === 0 ) {
+                        // If the icon url starts with /
+                        // We use the host to form the absolute URL
+                        $parsed_url = parse_url( $url );
+                        $ico_url = $parsed_url['scheme'] . '://' . $parsed_url['host']  . $ico_href;
+                    } else {
+                        // If not, we are using the relative path
+                        $ico_url = $url . ltrim($ico_href, '/');
+                    }
                     $logs[] = 'else: ' . $ico_url;
                 }
             }
