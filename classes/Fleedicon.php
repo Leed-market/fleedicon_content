@@ -38,7 +38,6 @@ class Fleedicon {
              && $this->today > $this->getNewCheckDate()
             )
             || $this->debug ) {
-            $this->createErrorsFile();
             $this->setFavicon();
         }
 
@@ -91,6 +90,7 @@ class Fleedicon {
     }
 
     public static function setAllFavicons($plugin_path = './') {
+        self::createErrorsFile($plugin_path);
         $feed = new Feed();
         $conditions = 'SELECT id, website FROM `' . MYSQL_PREFIX .  'feed` ;';
         $query = $feed->customQuery($conditions);
@@ -143,7 +143,7 @@ class Fleedicon {
         self::removeFile($plugin_path . self::CHECK_DATE_FILE);
     }
 
-    protected function createErrorsFile() {
+    protected function createErrorsFile($plugin_path) {
         $errors_file = $plugin_path . self::NO_FAVICON_LOG_FILE;
         self::removeFile($errors_file);
         self::createFileIfNotExists($errors_file);
