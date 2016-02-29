@@ -72,13 +72,6 @@ class Fleedicon {
             if($favicon !== false) {
                 file_put_contents($this->icon_path, $favicon);
             } else {
-                $parsed_url = parse_url( $url );
-                $favicon = file_get_contents('http://www.google.com/s2/favicons?domain=' . $parsed_url['scheme'] . '://' . $parsed_url['host'], 0, $this->getContext() );
-                if($favicon !== false) {
-                    file_put_contents($this->icon_path, $favicon);
-                }
-            }
-            if($favicon === false) {
                 file_put_contents($this->plugin_path . self::NO_FAVICON_LOG_FILE, $url . "\n", FILE_APPEND | LOCK_EX);
             }
         }
@@ -165,7 +158,17 @@ class Fleedicon {
         // Helped by: https://github.com/gokercebeci/geticon/blob/master/class.geticon.php
         $logs[] = 'in: ' . $url;
 
-        $html = @file_get_contents($url, false, $this->getContext() );
+        $user_agent = $this->getUserAgent();
+
+        $context = stream_context_create(
+                array (
+                    'http' => array (
+                        'follow_location' => true, // don't follow redirects
+                        'user_agent' => $user_agent
+                    )
+                )
+            );
+        $html = @file_get_contents($url, false, $context);
         //$html = @stream_get_contents(fopen($url, "rb"));
         $logs[] = '<pre>' . print_r( $html, true ) . '</pre>';
         if (preg_match('/<([^>]*)link([^>]*)rel\=("|\')?(icon|shortcut icon)("|\')?([^>]*)>/iU', $html, $out)) {
@@ -208,17 +211,6 @@ class Fleedicon {
         }
 
         return $this->getImage($ico_url);
-    }
-
-    protected function getContext() {
-        return stream_context_create(
-                array (
-                    'http' => array (
-                        'follow_location' => true, // don't follow redirects
-                        'user_agent' => $this->getUserAgent()
-                    )
-                )
-            );
     }
 
     protected function getImage($url) {
