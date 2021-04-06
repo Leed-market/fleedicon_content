@@ -9,11 +9,11 @@ Favicons stored inside the `favicons` folder.
 ### How can I add favicons to my Leed's theme?
 #### Inside the side bar
 /!\ `menu_pre_feed_link` hook needed.
-`{if="isset($value->favicon)"}{$value->favicon}{/if}`
+`{if="isset($value2['favicon'])"}{$value2['favicon']}{/if}`
 
 #### Inside the main view
 /!\ `event_pre_title` hook needed.
-`{if="isset($value2['favicon'])"}{$value2['favicon']}{/if}`
+`{if="isset($value->favicon)"}{$value->favicon}{/if}`
 
 ### Where can I find the the logs?
 * Log files are located inside the 'logs' folder
