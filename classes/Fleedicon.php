@@ -1,6 +1,7 @@
 <?php
 
 class Fleedicon {
+    const DEFAULT_EXTENSION = 'png';
     CONST FAVICONS_FOLDER = 'favicons/';
     CONST LOGS_FOLDER     = 'logs/';
     CONST NO_FAVICON_LOG_FILE = self::LOGS_FOLDER . 'no-favicon';
@@ -11,6 +12,7 @@ class Fleedicon {
     protected $plugin_path;
     protected $base_path;
     protected $icon_path;
+    protected $icon_path_without_extension;
     protected $icon_exists;
     protected $default_icon_path;
 
@@ -24,7 +26,9 @@ class Fleedicon {
         $this->plugin_path = $path;
 
         $this->base_path = $this->plugin_path . self::FAVICONS_FOLDER;
-        $this->icon_path = $this->base_path . $this->feed_id . '.png';
+        $this->icon_path_without_extension = $this->base_path . $this->feed_id;
+
+        $this->icon_path = $this->getIconPath();
         $this->icon_exists = file_exists( $this->icon_path );
         $this->default_icon_path = $this->base_path . 'default.png';
 
@@ -70,7 +74,9 @@ class Fleedicon {
             $favicon = $this->getFaviconFromUrl($url);
 
             if($favicon !== false) {
-                file_put_contents($this->icon_path, $favicon);
+                $extension = pathinfo($favicon['url'])['extension'] ?? self::DEFAULT_EXTENSION;
+                $image = $this->getIconPath($extension);
+                file_put_contents($image, $favicon['file']);
             } else {
                 file_put_contents($this->plugin_path . self::NO_FAVICON_LOG_FILE, $url . "\n", FILE_APPEND | LOCK_EX);
             }
@@ -98,7 +104,7 @@ class Fleedicon {
 
     public function removeFavicon( $path = false ) {
         if( ! $path ) {
-            $path = $this->base_path . $this->feed_id . '.png';
+            $path = $this->getExistingFavicon();
         }
 
         self::deleteFavicon( $path );
@@ -234,7 +240,7 @@ class Fleedicon {
 
         $pos = strpos($mime_type, 'image');
 
-        return $pos !== false ? $file : false;
+        return $pos !== false ? ['file' => $file, 'url' => $url ] : false;
     }
 
     protected function getNewCheckDate() {
@@ -250,5 +256,16 @@ class Fleedicon {
             $user_agent = $_SERVER['HTTP_USER_AGENT'];
         }
         return $user_agent;
+    }
+
+    private function getIconPath($extension = self::DEFAULT_EXTENSION) {
+        $existing = $this->getExistingFavicon();
+        return $existing ?? $this->icon_path_without_extension . '.' . $extension;
+    }
+
+    private function getExistingFavicon()
+    {
+        $existingFavicons = glob($this->icon_path_without_extension . '*');
+        return array_shift($existingFavicons);
     }
 }
