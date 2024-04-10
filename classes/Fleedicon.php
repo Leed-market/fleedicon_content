@@ -49,12 +49,7 @@ class Fleedicon {
             $this->icon_path = $this->default_icon_path;
         }
 
-        /**
-         * Besoin de ça pour renseigner correctement le ALT
-         */
-        global $allFeeds;
-
-        return '<img src="' . $this->icon_path . '" width="16" height="16" alt="' . htmlentities($allFeeds['idMap'][$this->feed_id]['name'], ENT_QUOTES) . '" class="feed-icon" />';
+        return '<img src="' . $this->icon_path . '" width="16" height="16" alt="" class="feed-icon" />';
     }
 
     public function setFavicon($set_check_date=true, $url=false) {
