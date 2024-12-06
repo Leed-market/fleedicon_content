@@ -260,7 +260,7 @@ class Fleedicon {
 
     private function getExistingFavicon()
     {
-        $existingFavicons = glob($this->icon_path_without_extension . '*');
+        $existingFavicons = glob($this->icon_path_without_extension . '.*');
         return array_shift($existingFavicons);
     }
 }
